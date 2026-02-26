@@ -50,3 +50,6 @@ fi
 # Permission management 
 chmod 700 "${PKI_PRIVATE}"
 chmod 400 "${PKI_PRIVATE}/root-ca.key"
+
+echo "Private directory permission: $(ls -ld "${PKI_PRIVATE}")"
+echo "Root-ca key permission: $(ls -l "${PKI_PRIVATE}/root-ca.key")"

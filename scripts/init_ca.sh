@@ -10,35 +10,19 @@ PKI_CRL="${PKI_CA}/crl"
 PKI_PRIVATE="${PKI_CA}/private"
 PKI_NEWCERTS="${PKI_CA}/newcerts"
 PKI_SERIAL="${PKI_CA}/serial"
+PKI_INDEX="${PKI_CA}/index.txt"
 PKI_CRL_NUMBER="${PKI_CA}/crl_number"
 
 
-
-
-
 if [ -d "pki" ]; then
-    echo "pki directory already exists"
-    exit 1
-
+    echo "[+] pki directory already exists"
 else
-    mkdir -p pki/{newcerts,private,certs}
-    touch pki/index.txt
-    echo 1000 > pki/serial
-    echo 1000 > pki/crlnumber
-fi
-
-chmod 700 pki/private
-
-
-
-chmod 400 pki/private/rootca.key
-
-if [ -f "pki/certs/rootca.crt" ]; then
-    echo "rootca.crt already exists"
-elif [ -f "pki/private/rootca.key" ]; then
-    echo "rootca.key already exists"
-else  
-    openssl genrsa -aes256 -out pki/private/rootca.key 4096
-    openssl req -new -x509 -config openssl.cnf -key pki/private/rootca.key -out pki/certs/rootca.crt 
+    mkdir -p "${PKI_CA}" "${PKI_NEWCERTS}" "${PKI_PRIVATE}" "${PKI_CERTS}" "${PKI_CRL}"
+    echo "[+] Creation (CA -> newcerts, private, certs, crl) directories"
+    touch "${PKI_INDEX}"
+    echo 1000 > ${PKI_SERIAL}
+    echo 1000 > ${PKI_CRL_NUMBER}
+    echo "[+] Creation index.txt, serial, crl_number files & initial values for serial and crl_number" 
+    
 fi
 

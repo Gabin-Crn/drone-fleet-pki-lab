@@ -58,7 +58,7 @@ done
 if [[ -f "${PKI_CERTS}/issue.crt" ]]; then
     echo "[+] Issue cert already exists"
 else
-    openssl x509 -req -in "${$PKI_CSR}/issue.csr" -signkey "${PKI_PRIVATE}/root-ca.key" -out "${PKI_CERTS}/issue.crt"
+    openssl x509 -req -config "openssl-rootca.cnf" -in "${$PKI_CSR}/issue.csr" -out "${PKI_CERTS}/issue.crt"
     echo "[+] Issue cert has been generated"
 fi
 
@@ -66,6 +66,6 @@ for (( i=0; i < $1; i++)); do
     if [[ -f "${PKI_CERTS}/drone.${i}.crt"]]; then
         echo "[+] Drone-${i} already exists"
     else
-        openssl x509 -req -in "${PKI_CSR}/drone-${i}.csr" -signkey "${PKI_PRIVATE}/issue.key" -out "${PKI_CERTS}/drone-${i}.crt"
+        openssl x509 -req -config "openssl-issue.cnf" -in "${PKI_CSR}/drone-${i}.csr" -out "${PKI_CERTS}/drone-${i}.crt"
         echo "[+] Drone-${i} has been generated"
 done

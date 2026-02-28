@@ -2,7 +2,7 @@
 default_ca = CA_default
 
 [CA_default]
-dir = ./pki/
+dir = ./pki/ca
 certs = $dir/certs
 crl_dir = $dir/crl
 new_certs_dir = $dir/newcerts
@@ -10,13 +10,9 @@ database = $dir/index.txt
 serial = $dir/serial
 crlnumber = $dir/crlnumber
 
-private_key = $dir/private/ca.key
-certificate = $dir/certs/ca.crt
+private_key = $dir/private/root-ca.key
+certificate = $dir/certs/root-ca.crt
 
-default_days = 365
-default_md = sha256
-policy = policy_loose
-x509_extensions = usr_cert
 
 [ policy_loose ]
 countryName             = optional
@@ -29,8 +25,9 @@ emailAddress            = optional
 
 [req]
 default_bits = 4096
-x509_extensions = v3_ca
+default_days = 7300
 default_md = sha256
+policy = policy_loose
 distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
@@ -40,33 +37,14 @@ OU = Organizational Unit Name (ex: Security)
 CN = Common Name (ex: Root CA)
 
 
-[v3_ca]
+[v3_root_ca]
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer
 basicConstraints = critical, CA:true
 keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 
-[ alt_names ]
-DNS.1 = localhost
-IP.1  = 127.0.0.1
-
-[server_cert]
+[v3_issue_ca]
 subjectKeyIdentifier = hash
-basicConstraints = critical, CA:false
-nsComment = "Drone Fleet GCS Server Certificate"
-keyUsage = critical, digitalSignature, keyEncipherment
-extendedKeyUsage = serverAuth
-authorityKeyIdentifier = keyid,issuer
-subjectAltName = @alt_names
-
-[drone_cert]
-subjectKeyIdentifier = hash
-nsComment = "Drone Identity Certificate"
-basicConstraints = critical, CA:false
-authorityKeyIdentifier = keyid,issuer
-keyUsage = critical, digitalSignature, keyEncipherment
-extendedKeyUsage = clientAuth
-
-
-[ crl_ext ]
-authorityKeyIdentifier = keyid:always
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen=0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign

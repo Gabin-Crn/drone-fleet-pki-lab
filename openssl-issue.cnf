@@ -13,10 +13,6 @@ crlnumber = $dir/crlnumber
 private_key = $dir/private/issue.key
 certificate = $dir/certs/issue.crt
 
-default_days = 365
-default_md = sha256
-policy = policy_loose
-x509_extensions = usr_cert
 
 [ policy_loose ]
 countryName             = optional
@@ -28,8 +24,10 @@ commonName              = supplied
 emailAddress            = optional
 
 [req]
+default_days = 365
 default_bits = 2048
 default_md = sha256
+policy = policy_loose
 distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
@@ -59,7 +57,3 @@ basicConstraints = critical, CA:false
 authorityKeyIdentifier = keyid,issuer
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = clientAuth
-
-
-[ crl_ext ]
-authorityKeyIdentifier = keyid:always

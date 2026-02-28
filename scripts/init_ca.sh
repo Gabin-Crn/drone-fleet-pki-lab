@@ -41,7 +41,7 @@ fi
 if [ -f "${PKI_CA}/certs/root-ca.crt" ]; then
     echo "[+] Root CA certificate already exists"
 else
-    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/root-ca.key -out ${PKI_CA}/certs/root-ca.crt -days 7300
+    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/root-ca.key -out ${PKI_CA}/certs/root-ca.crt -extensions v3_root_ca
     echo "[+] Root CA certificate generated"
 fi
 

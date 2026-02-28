@@ -1,0 +1,65 @@
+[ca]
+default_ca = CA_default
+
+[CA_default]
+dir = ./pki/issue
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index.txt
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+
+private_key = $dir/private/issue.key
+certificate = $dir/certs/issue.crt
+
+default_days = 365
+default_md = sha256
+policy = policy_loose
+x509_extensions = usr_cert
+
+[ policy_loose ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[req]
+default_bits = 2048
+default_md = sha256
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+C  = Country (ex: FR)
+O  = Organization Name (ex: Drone Fleet)
+OU = Organizational Unit Name (ex: Security)
+CN = Common Name (ex: Root CA)
+
+
+[ alt_names ]
+DNS.1 = localhost
+IP.1  = 127.0.0.1
+
+[server_cert]
+subjectKeyIdentifier = hash
+basicConstraints = critical, CA:false
+nsComment = "Drone Fleet GCS Server Certificate"
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+authorityKeyIdentifier = keyid,issuer
+subjectAltName = @alt_names
+
+[drone_cert]
+subjectKeyIdentifier = hash
+nsComment = "Drone Identity Certificate"
+basicConstraints = critical, CA:false
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth
+
+
+[ crl_ext ]
+authorityKeyIdentifier = keyid:always

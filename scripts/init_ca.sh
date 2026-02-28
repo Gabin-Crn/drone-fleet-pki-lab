@@ -9,7 +9,7 @@ PKI_CA="${PKI_DIR}/ca"
 PKI_ISSUE="${PKI_DIR}/issue"
 
 
-OPENSSL_CONFIG="openssl.cnf"
+OPENSSL_CONFIG="openssl-rootca.cnf"
 
 # Creation directories
 
@@ -21,8 +21,10 @@ else
     mkdir -p "${PKI_DIR}/csr"
     echo "[+] Creation (CA -> newcerts, private, certs, crl, csr) directories"
     touch "${PKI_CA}/index.txt"
-    echo 1000 > "${PKI_CA}/crlnumber", "${PKI_ISSUE}/crlnumber"
-    echo 1000 > "${PKI_CA}/serial", "${PKI_ISSUE}/serial"
+    for d in "${PKI_CA}" "${PKI_ISSUE}"; do
+        echo 1000 > "${d}/crlnumber"
+        echo 1000 > "${d}/serial"
+    done
     echo "[+] Creation index.txt, serial, crl_number files & initial values for serial and crl_number"  
 fi
 
@@ -31,7 +33,7 @@ fi
 if [ -f "${PKI_CA}/private/root-ca.key" ]; then
     echo "[+] Root CA key already exists"
 else
-    openssl genrsa -aes256 -out "${PKI_CA}/private/root-ca.key" 4096
+    openssl genrsa -aes256 -out "${PKI_CA}/private/root-ca.key" -passout file:passphrase.txt 4096
     echo "[+] Root CA key generated"
 fi
 
@@ -41,13 +43,13 @@ fi
 if [ -f "${PKI_CA}/certs/root-ca.crt" ]; then
     echo "[+] Root CA certificate already exists"
 else
-    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/root-ca.key -out ${PKI_CA}/certs/root-ca.crt -extensions v3_root_ca
+    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/root-ca.key -out ${PKI_CA}/certs/root-ca.crt -extensions v3_root_ca -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Drone Fleet Root CA"
     echo "[+] Root CA certificate generated"
 fi
 
 # Permission management 
-chmod 700 "${PKI_CA}/private"
-chmod 400 "${PKI_CA}/private/root-ca.key"
+chmod 744 "${PKI_CA}/private"
+chmod 444 "${PKI_CA}/private/root-ca.key"
 
 echo "Private directory permission: $(ls -ld "${PKI_CA}/private")"
 echo "Root-ca key permission: $(ls -l "${PKI_CA}/private/root-ca.key")"

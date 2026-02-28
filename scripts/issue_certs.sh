@@ -2,10 +2,12 @@
 set -euo pipefail 
 
 PKI_DIR="pki"
-PKI_CSR="${PKI_DIR}/ca/csr"
-PKI_CERT="${PKI_DIR}/ca/certs"
-PKI_PRIVATE="${PKI_DIR}/ca/private"
-NUMBER-OF-DRONES=$1
+PKI_CSR="${PKI_DIR}/csr"
+PKI_CERT="${PKI_DIR}/issue/certs"
+PKI_PRIVATE="${PKI_DIR}/issue/private"
+NUMBER_OF_DRONES="$1"
+OPENSSL_CONFIG_CA="openssl-rootca.cnf"
+OPENSSL_CONFIG_ISSUE="openssl-issue.cnf"
 
 ## Check if files exists
 
@@ -13,19 +15,19 @@ NUMBER-OF-DRONES=$1
 if [[  -f "${PKI/PRIVATE}/issue.key" ]]; then
     echo "[+] Issue key already exists"
 else
-    openssl genrsa -aes256 -out "${PKI_PRIVATE}/issue.key" 4096
+    openssl genrsa -aes256 -out "${PKI_PRIVATE}/issue.key" -passout file:passphrase.txt 4096
     chmod 400 "${PKI_PRIVATE}/issue.key"
 
     echo "[+] Issue key has been generated"
 fi
 
 # Drone key generation
-for (( i=0; i<$1; i++)); do 
-    if [[ -f "${PKI/PRIVATE}/drones.${i}.key"]]; then
+for (( i=0 ; i<NUMBER_OF_DRONES ; i++ )); do 
+    if [[ -f "${PKI_PRIVATE}/drone.${i}.key" ]]; then
         echo "[+] Drone ${i} already exists"
     else
-        openssl genrsa -aes256 -out "${PKI_PRIVATE}/drones.${i}.key" 4096
-        chmod 400 "${PKI_PRIVATE}/drones.${i}.key"
+        openssl genrsa -aes256 -out "${PKI_PRIVATE}/drone-${i}.key" -passout file:passphrase.txt 4096
+        chmod 400 "${PKI_PRIVATE}/drone-${i}.key"
         echo "[+] Drone ${i} has been generated"
     fi
 done
@@ -33,18 +35,18 @@ done
 
 # Generation csr 
 
-if [[ -f "${PKI_CSR}/issue.csr"]]; then
+if [[ -f "${PKI_CSR}/issue.csr" ]]; then
     echo "[+] Issue csr already exists"
 else
-    openssl req -new -config "${OPENSSL_CONFIG}" -key "${PKI_PRIVATE}/issue.key" -out "${PKI_CSR}/issue.csr" 
+    openssl req -new -config "${OPENSSL_CONFIG_CA}" -key "${PKI_PRIVATE}/issue.key" -out "${PKI_CSR}/issue.csr" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Drone Issue CA"
     echo "[+] Issue csr has been generated"
 fi
 
-for ((i=0; i<$1; i++)); do
-    if [[ -f "${PKI_CSR}/drone.${i}.csr"]]; then
+for ((i=0; i<NUMBER_OF_DRONES; i++)); do
+    if [[ -f "${PKI_CSR}/drone.${i}.csr" ]]; then
         echo "[+] Drone ${i} csr already exists"
     else
-        openssl -req -new -config "${OPENSSL_CONFIG}" -key "${PKI_PRIVATE}/drone-${i}.key" -out "${PKI_CSR}/drone-${i}.csr"
+        openssl req -new -config "${OPENSSL_CONFIG_ISSUE}" -key "${PKI_PRIVATE}/drone-${i}.key" -out "${PKI_CSR}/drone-${i}.csr" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=drone-00${i}"
         echo "[+] Drone ${i} csr has been generated"
     fi
 done
@@ -55,17 +57,17 @@ done
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-if [[ -f "${PKI_CERTS}/issue.crt" ]]; then
+if [[ -f "${PKI_CERT}/issue.crt" ]]; then
     echo "[+] Issue cert already exists"
 else
-    openssl x509 -req -config "openssl-rootca.cnf" -in "${$PKI_CSR}/issue.csr" -out "${PKI_CERTS}/issue.crt"
+    openssl ca -config "${OPENSSL_CONFIG_CA}" -in "${PKI_CSR}/issue.csr" -out "${PKI_CERT}/issue.crt" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Issue CA"
     echo "[+] Issue cert has been generated"
 fi
 
 for (( i=0; i < $1; i++)); do
-    if [[ -f "${PKI_CERTS}/drone.${i}.crt"]]; then
+    if [[ -f "${PKI_CERT}/drone.${i}.crt" ]]; then
         echo "[+] Drone-${i} already exists"
     else
-        openssl x509 -req -config "openssl-issue.cnf" -in "${PKI_CSR}/drone-${i}.csr" -out "${PKI_CERTS}/drone-${i}.crt"
+        openssl ca -config "${OPENSSL_CONFIG_ISSUE}" -in "${PKI_CSR}/drone-${i}.csr" -out "${PKI_CERT}/drone-${i}.crt" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=drone-00${i}"
         echo "[+] Drone-${i} has been generated"
 done

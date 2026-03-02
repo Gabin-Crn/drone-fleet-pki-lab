@@ -14,6 +14,10 @@ private_key = $dir/private/root-ca.key
 certificate = $dir/certs/root-ca.crt
 
 
+default_md = sha256
+policy = policy_loose
+default_days = 365
+
 [ policy_loose ]
 countryName             = optional
 stateOrProvinceName     = optional
@@ -26,8 +30,8 @@ emailAddress            = optional
 [req]
 default_bits = 4096
 default_days = 7300
-default_md = sha256
-policy = policy_loose
+
+
 distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
@@ -43,8 +47,3 @@ authorityKeyIdentifier = keyid:always,issuer
 basicConstraints = critical, CA:true
 keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 
-[v3_issue_ca]
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always,issuer
-basicConstraints = critical, CA:true, pathlen=0
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign

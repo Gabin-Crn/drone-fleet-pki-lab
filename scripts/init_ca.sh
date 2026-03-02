@@ -20,8 +20,8 @@ else
     mkdir -p "${PKI_ISSUE}" "${PKI_ISSUE}/newcerts" "${PKI_ISSUE}/private" "${PKI_ISSUE}/certs" "${PKI_ISSUE}/crl"
     mkdir -p "${PKI_DIR}/csr"
     echo "[+] Creation (CA -> newcerts, private, certs, crl, csr) directories"
-    touch "${PKI_CA}/index.txt"
     for d in "${PKI_CA}" "${PKI_ISSUE}"; do
+        touch "${d}/index.txt"
         echo 1000 > "${d}/crlnumber"
         echo 1000 > "${d}/serial"
     done

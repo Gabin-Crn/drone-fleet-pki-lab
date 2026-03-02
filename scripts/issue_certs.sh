@@ -60,14 +60,15 @@ done
 if [[ -f "${PKI_CERT}/issue.crt" ]]; then
     echo "[+] Issue cert already exists"
 else
-    openssl ca -config "${OPENSSL_CONFIG_CA}" -in "${PKI_CSR}/issue.csr" -out "${PKI_CERT}/issue.crt" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Issue CA"
+    openssl ca -config "${OPENSSL_CONFIG_CA}" -in "${PKI_CSR}/issue.csr" -out "${PKI_CERT}/issue.crt" -passin file:passphrase.txt -extensions v3_root_ca
     echo "[+] Issue cert has been generated"
 fi
 
-for (( i=0; i < $1; i++)); do
+for (( i=0; i < NUMBER_OF_DRONES; i++)); do
     if [[ -f "${PKI_CERT}/drone.${i}.crt" ]]; then
         echo "[+] Drone-${i} already exists"
     else
-        openssl ca -config "${OPENSSL_CONFIG_ISSUE}" -in "${PKI_CSR}/drone-${i}.csr" -out "${PKI_CERT}/drone-${i}.crt" -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=drone-00${i}"
+        openssl ca -config "${OPENSSL_CONFIG_ISSUE}" -in "${PKI_CSR}/drone-${i}.csr" -out "${PKI_CERT}/drone-${i}.crt" -passin file:passphrase.txt -extensions v3_issue_ca
         echo "[+] Drone-${i} has been generated"
+    fi
 done

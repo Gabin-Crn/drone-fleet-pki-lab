@@ -13,6 +13,9 @@ crlnumber = $dir/crlnumber
 private_key = $dir/private/issue.key
 certificate = $dir/certs/issue.crt
 
+default_md = sha256
+policy = policy_loose
+default_days = 365
 
 [ policy_loose ]
 countryName             = optional
@@ -24,10 +27,9 @@ commonName              = supplied
 emailAddress            = optional
 
 [req]
-default_days = 365
+
 default_bits = 2048
-default_md = sha256
-policy = policy_loose
+
 distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
@@ -35,6 +37,12 @@ C  = Country (ex: FR)
 O  = Organization Name (ex: Drone Fleet)
 OU = Organizational Unit Name (ex: Security)
 CN = Common Name (ex: Root CA)
+
+[v3_issue_ca]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 
 
 [ alt_names ]

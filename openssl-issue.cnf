@@ -2,7 +2,7 @@
 default_ca = CA_default
 
 [CA_default]
-dir = ./pki/
+dir = ./pki/issue
 certs = $dir/certs
 crl_dir = $dir/crl
 new_certs_dir = $dir/newcerts
@@ -10,13 +10,12 @@ database = $dir/index.txt
 serial = $dir/serial
 crlnumber = $dir/crlnumber
 
-private_key = $dir/private/ca.key
-certificate = $dir/certs/ca.crt
+private_key = $dir/private/issue.key
+certificate = $dir/certs/issue.crt
 
-default_days = 365
 default_md = sha256
 policy = policy_loose
-x509_extensions = usr_cert
+default_days = 365
 
 [ policy_loose ]
 countryName             = optional
@@ -28,9 +27,9 @@ commonName              = supplied
 emailAddress            = optional
 
 [req]
-default_bits = 4096
-x509_extensions = v3_ca
-default_md = sha256
+
+default_bits = 2048
+
 distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
@@ -39,12 +38,12 @@ O  = Organization Name (ex: Drone Fleet)
 OU = Organizational Unit Name (ex: Security)
 CN = Common Name (ex: Root CA)
 
-
-[v3_ca]
+[v3_issue_ca]
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer
-basicConstraints = critical, CA:true
+basicConstraints = critical, CA:true, pathlen:0
 keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
 
 [ alt_names ]
 DNS.1 = localhost
@@ -66,7 +65,3 @@ basicConstraints = critical, CA:false
 authorityKeyIdentifier = keyid,issuer
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = clientAuth
-
-
-[ crl_ext ]
-authorityKeyIdentifier = keyid:always

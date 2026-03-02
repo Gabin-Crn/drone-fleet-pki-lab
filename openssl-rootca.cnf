@@ -1,0 +1,49 @@
+[ca]
+default_ca = CA_default
+
+[CA_default]
+dir = ./pki/ca
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/index.txt
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+
+private_key = $dir/private/root-ca.key
+certificate = $dir/certs/root-ca.crt
+
+
+default_md = sha256
+policy = policy_loose
+default_days = 365
+
+[ policy_loose ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[req]
+default_bits = 4096
+default_days = 7300
+
+
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+C  = Country (ex: FR)
+O  = Organization Name (ex: Drone Fleet)
+OU = Organizational Unit Name (ex: Security)
+CN = Common Name (ex: Root CA)
+
+
+[v3_root_ca]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+

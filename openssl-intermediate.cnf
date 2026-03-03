@@ -2,7 +2,7 @@
 default_ca = CA_default
 
 [CA_default]
-dir = ./pki/issue
+dir = ./pki/intermediate
 certs = $dir/certs
 crl_dir = $dir/crl
 new_certs_dir = $dir/newcerts
@@ -10,8 +10,8 @@ database = $dir/index.txt
 serial = $dir/serial
 crlnumber = $dir/crlnumber
 
-private_key = $dir/private/issue.key
-certificate = $dir/certs/issue.crt
+private_key = $dir/private/intermediate.key
+certificate = $dir/certs/intermediate.crt
 
 default_md = sha256
 policy = policy_loose
@@ -38,11 +38,7 @@ O  = Organization Name (ex: Drone Fleet)
 OU = Organizational Unit Name (ex: Security)
 CN = Common Name (ex: Root CA)
 
-[v3_issue_ca]
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always,issuer
-basicConstraints = critical, CA:true, pathlen:0
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
 
 
 [ alt_names ]

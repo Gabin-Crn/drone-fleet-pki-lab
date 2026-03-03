@@ -6,7 +6,8 @@ set -euo pipefail
 
 PKI_DIR="pki"
 PKI_CA="${PKI_DIR}/ca"
-PKI_ISSUE="${PKI_DIR}/issue"
+PKI_INTERMEDIATE="${PKI_DIR}/intermediate"
+PKI_ENDPOINT="${PKI_DIR}/endpoint"
 
 
 OPENSSL_CONFIG="openssl-rootca.cnf"
@@ -17,10 +18,11 @@ if [ -d "pki" ]; then
     echo "[+] pki directory already exists"
 else
     mkdir -p "${PKI_CA}" "${PKI_CA}/newcerts" "${PKI_CA}/private" "${PKI_CA}/certs" "${PKI_CA}/crl" 
-    mkdir -p "${PKI_ISSUE}" "${PKI_ISSUE}/newcerts" "${PKI_ISSUE}/private" "${PKI_ISSUE}/certs" "${PKI_ISSUE}/crl"
+    mkdir -p "${PKI_INTERMEDIATE}" "${PKI_INTERMEDIATE}/newcerts" "${PKI_INTERMEDIATE}/private" "${PKI_INTERMEDIATE}/certs" "${PKI_INTERMEDIATE}/crl"
+    mkdir -p "${PKI_ENDPOINT}" "${PKI_ENDPOINT}/newcerts" "${PKI_ENDPOINT}/private" "${PKI_ENDPOINT}/certs" "${PKI_ENDPOINT}/crl"
     mkdir -p "${PKI_DIR}/csr"
     echo "[+] Creation (CA -> newcerts, private, certs, crl, csr) directories"
-    for d in "${PKI_CA}" "${PKI_ISSUE}"; do
+    for d in "${PKI_CA}" "${PKI_INTERMEDIATE}" ${PKI_ENDPOINT}; do
         touch "${d}/index.txt"
         echo 1000 > "${d}/crlnumber"
         echo 1000 > "${d}/serial"
@@ -48,8 +50,8 @@ else
 fi
 
 # Permission management 
-chmod 744 "${PKI_CA}/private"
-chmod 444 "${PKI_CA}/private/root-ca.key"
+chmod 600 "${PKI_CA}/private"
+chmod 400 "${PKI_CA}/private/root-ca.key"
 
 echo "Private directory permission: $(ls -ld "${PKI_CA}/private")"
 echo "Root-ca key permission: $(ls -l "${PKI_CA}/private/root-ca.key")"

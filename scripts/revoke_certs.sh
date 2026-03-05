@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-if [[ $# -ne 2 ]]; then 
+if [[ $# -ne 1 ]]; then 
     echo "Usage : $0 <common_name>"
     exit 1
 fi
 
 CN=$1
-CERT_PATH="pki/endpoints/${CN}.crt"
+CERT_PATH="pki/endpoint/certs/${CN}.crt"
 
 if [[ ! -f "$CERT_PATH" ]]; then
     echo "Certificate not found: $CERT_PATH"
@@ -14,5 +14,5 @@ if [[ ! -f "$CERT_PATH" ]]; then
 fi
 
 
-openssl ca -config opensskl-intermediate.cnf -revoke "$CN"
+openssl ca -config openssl-intermediate.cnf -revoke "$CERT_PATH"
 echo "[+] ${CN} Revoked"

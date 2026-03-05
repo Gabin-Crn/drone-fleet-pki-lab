@@ -16,6 +16,7 @@ certificate = $dir/certs/intermediate.crt
 default_md = sha256
 policy = policy_loose
 default_days = 365
+default_crl_days = 30
 
 [ policy_loose ]
 countryName             = optional

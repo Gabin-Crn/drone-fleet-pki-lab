@@ -7,4 +7,4 @@ fi
 
 CERT_PATH=$1
 
-openssl verify  -CAfile "pki/ca/certs/root-ca.crt" -untrusted "pki/intermediate/certs/intermediate.crt"   -crl_check  -CRLfile "pki/intermediate/crl/intermediate.crl.pem"  "$CERT_PATH"
+openssl verify  -CAfile "pki/rootca/certs/rootca.crt" -untrusted "pki/intermediate/certs/intermediate.crt"   -crl_check  -CRLfile "pki/intermediate/crl/intermediate.crl.pem"  "$CERT_PATH"

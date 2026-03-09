@@ -5,7 +5,7 @@ set -euo pipefail
 # Variables 
 
 PKI_DIR="pki"
-PKI_CA="${PKI_DIR}/ca"
+PKI_CA="${PKI_DIR}/rootca"
 PKI_INTERMEDIATE="${PKI_DIR}/intermediate"
 PKI_ENDPOINT="${PKI_DIR}/endpoint"
 
@@ -19,10 +19,10 @@ if [ -d "pki" ]; then
 else
     mkdir -p "${PKI_CA}" "${PKI_CA}/newcerts" "${PKI_CA}/private" "${PKI_CA}/certs" "${PKI_CA}/crl" 
     mkdir -p "${PKI_INTERMEDIATE}" "${PKI_INTERMEDIATE}/newcerts" "${PKI_INTERMEDIATE}/private" "${PKI_INTERMEDIATE}/certs" "${PKI_INTERMEDIATE}/crl"
-    mkdir -p "${PKI_ENDPOINT}" "${PKI_ENDPOINT}/newcerts" "${PKI_ENDPOINT}/private" "${PKI_ENDPOINT}/certs" "${PKI_ENDPOINT}/crl"
+    mkdir -p "${PKI_ENDPOINT}" "${PKI_ENDPOINT}/newcerts" "${PKI_ENDPOINT}/private" "${PKI_ENDPOINT}/certs" 
     mkdir -p "${PKI_DIR}/csr"
     echo "[+] Creation (CA -> newcerts, private, certs, crl, csr) directories"
-    for d in "${PKI_CA}" "${PKI_INTERMEDIATE}" ${PKI_ENDPOINT}; do
+    for d in "${PKI_CA}" "${PKI_INTERMEDIATE}"; do
         touch "${d}/index.txt"
         echo 1000 > "${d}/crlnumber"
         echo 1000 > "${d}/serial"
@@ -32,26 +32,26 @@ fi
 
 # RootCA Key generation
 
-if [ -f "${PKI_CA}/private/root-ca.key" ]; then
+if [ -f "${PKI_CA}/private/rootca.key" ]; then
     echo "[+] Root CA key already exists"
 else
-    openssl genrsa -aes256 -out "${PKI_CA}/private/root-ca.key" -passout file:passphrase.txt 4096
+    openssl genrsa -aes256 -out "${PKI_CA}/private/rootca.key" -passout file:passphrase.txt 4096
     echo "[+] Root CA key generated"
 fi
 
 
 # RootCA Certificate generation
 
-if [ -f "${PKI_CA}/certs/root-ca.crt" ]; then
+if [ -f "${PKI_CA}/certs/rootca.crt" ]; then
     echo "[+] Root CA certificate already exists"
 else
-    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/root-ca.key -out ${PKI_CA}/certs/root-ca.crt -extensions v3_root_ca -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Drone Fleet Root CA"
+    openssl req -new -x509 -config ${OPENSSL_CONFIG} -key ${PKI_CA}/private/rootca.key -out ${PKI_CA}/certs/rootca.crt -extensions v3_root_ca -passin file:passphrase.txt -subj "/C=FR/O=Drone Fleet/OU=Security/CN=Drone Fleet Root CA"
     echo "[+] Root CA certificate generated"
 fi
 
 # Permission management 
-chmod 600 "${PKI_CA}/private"
-chmod 400 "${PKI_CA}/private/root-ca.key"
+chmod 700 "${PKI_CA}/private"
+chmod 400 "${PKI_CA}/private/rootca.key"
 
 echo "Private directory permission: $(ls -ld "${PKI_CA}/private")"
-echo "Root-ca key permission: $(ls -l "${PKI_CA}/private/root-ca.key")"
+echo "Rootca key permission: $(ls -l "${PKI_CA}/private/rootca.key")"

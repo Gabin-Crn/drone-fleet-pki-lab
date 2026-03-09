@@ -1,2 +1,0 @@
-V	270303083244Z		1000	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=Drone intermediate CA
-R	270303083418Z	260303084211Z	1003	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=GCS-000

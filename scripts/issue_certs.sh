@@ -94,7 +94,7 @@ done
 if [[ -f "${PKI_CERT}/intermediate.crt" ]]; then
     echo "[+] intermediate cert already exists"
 else
-    openssl ca -config "${OPENSSL_CONFIG_CA}" -in "${PKI_CSR}/intermediate.csr" -out "${PKI_CERT}/intermediate.crt" -passin file:passphrase.txt -extensions v3_intermediate_ca
+    openssl ca -batch -config "${OPENSSL_CONFIG_CA}" -in "${PKI_CSR}/intermediate.csr" -out "${PKI_CERT}/intermediate.crt" -passin file:passphrase.txt -extensions v3_intermediate_ca
     echo "[+] intermediate cert has been generated"
 fi
 
@@ -102,7 +102,7 @@ for (( i=0; i < number_of_drone; i++)); do
     if [[ -f "${PKI_CERT_ED}/${cn}.${i}.crt" ]]; then
         echo "[+] ${cn}-${i} already exists"
     else
-        openssl ca -config "${OPENSSL_CONFIG_intermediate}" -in "${PKI_CSR}/${cn}-${i}.csr" -out "${PKI_CERT_ED}/${cn}-${i}.crt" -passin file:passphrase.txt -extensions "${EXT}"
+        openssl ca -batch -config "${OPENSSL_CONFIG_intermediate}" -in "${PKI_CSR}/${cn}-${i}.csr" -out "${PKI_CERT_ED}/${cn}-${i}.crt" -passin file:passphrase.txt -extensions "${EXT}"
         echo "[+] ${cn}-${i} has been generated"
     fi
 done

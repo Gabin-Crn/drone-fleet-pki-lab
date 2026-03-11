@@ -1,3 +1,4 @@
-R	270309081645Z	260309085109Z	1000	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=xelto-000
-V	270309081647Z		1001	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=xelto-001
-V	270309081658Z		1002	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=GCS-000
+V	270311152244Z		1000	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=GCS-000
+V	270311152246Z		1001	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=drone-fr-000
+R	270311152246Z	260311152250Z	1002	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=drone-fr-001
+V	270311152246Z		1003	unknown	/C=FR/O=Drone Fleet/OU=Security/CN=drone-fr-002
